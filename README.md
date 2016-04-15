@@ -80,3 +80,10 @@ included before your main template file.
 - Cannot deal with SVG
 - Does not do partial page loading - all templates must be loaded at once.
 - For IE8 compatibility you need to use the `--full` flag when compiling.
+
+## Honestly...
+
+This library was made for a time before React, and specifically, a time before
+React started using native createElement and TextNodes.
+
+(just use React)
