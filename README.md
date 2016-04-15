@@ -1,17 +1,18 @@
 # RW Javascript Templating System
 
 Takes in Handlebars-like templates and outputs native Javascript DOM calls.
-Optionally saves generated elements.
+Optionally saves generated elements.  No "runtime" Javascript files are
+required.
 
 ## Synopsis
 
-`templates/example.hbar`:
+Create a template to be compiled, `jstemplates/example.html`:
 
 ```html
 <div class="some_div" bind="bound_div">{{ hello_world }}</div>
 ```
 
-`js/hello.js`
+Put a snippet of Javascript on your page:
 
 ```javascript
 var obj = { "hello_world": "DOM ahoy!" }
@@ -21,7 +22,13 @@ console.log(obj.$t.bound_div.textContent); // "DOM ahoy!"
 document.body.appendChild(obj.$t._root);
 ```
 
-The resulting HTML:
+Compile the template with Python:
+
+```
+./RWTemplates.py
+```
+
+When the Javascript is invoked, you'll get:
 
 ```html
 <div class="some_div">DOM ahoy!</div>
@@ -44,7 +51,7 @@ Restrictions:
        - GOOD: `{{#if href}}<a href="hello"></a>{{else}}<a></a>{{/if}}`
 
 Some handy things to know:
-	
+
   - `{{ @root.blah }}`
     - access root context object
   - `{{ ^document.lang }}`
@@ -54,7 +61,7 @@ Some handy things to know:
 
 ## Helpers
 
-You can add your own helpers by 
+You can add your own helpers by
 
 ## Convenience Extras
 
@@ -63,10 +70,13 @@ turn into straight Javascript by adding/remove from `raw_js_functions` in `RWTem
 This will allow you to call, e.g., {{ gettext("Hello") }} in template files without needing
 to do {{ ^gettext("Hello") }}.
 
-## Form Handling
+## Form Handling and Helpers
 
-Works, but needs documentation.
+Works, but needs documentation.  This requires extra libraries to be present on the page,
+included before your main template file.
 
 ## Gotchas
 
 - Cannot deal with SVG
+- Does not do partial page loading - all templates must be loaded at once.
+- For IE8 compatibility you need to use the `--full` flag when compiling.
