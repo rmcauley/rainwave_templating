@@ -1,3 +1,5 @@
+/* globals RWTemplateFormsInit */
+
 (function() {
 	"use strict";
 
@@ -25,6 +27,10 @@
 	else {
 		RWTemplateHelpers = {};
 		window.RWTemplateHelpers = RWTemplateHelpers;
+	}
+
+	if (typeof(RWTemplateFormsInit) === "function") {
+		RWTemplateFormsInit();
 	}
 
 	RWTemplateHelpers.copyObject = function(obj) {
