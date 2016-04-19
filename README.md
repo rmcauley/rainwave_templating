@@ -59,10 +59,6 @@ Some handy things to know:
   - `{{#if ^c.flag == FLAG_CONSTANT }}`
     - access the current object the template system is looking at with _c
 
-## Helpers
-
-You can add your own helpers by
-
 ## Convenience Extras
 
 You can add your own convenience functions that will automatically
@@ -80,10 +76,3 @@ included before your main template file.
 - Cannot deal with SVG
 - Does not do partial page loading - all templates must be loaded at once.
 - For IE8 compatibility you need to use the `--full` flag when compiling.
-
-## Honestly...
-
-This library was made for a time before React, and specifically, a time before
-React started using native createElement and TextNodes.
-
-(just use React)
