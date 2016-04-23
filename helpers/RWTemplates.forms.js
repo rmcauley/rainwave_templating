@@ -1,5 +1,9 @@
-/* eslint no-param-reassign: 0, camelcase: 0, one-var: 0, no-console: 0, eqeqeq: 0 */
+/* eslint no-param-reassign: 0, camelcase: 0, one-var: 0, no-console: 0, eqeqeq: 0, max-depth: 0 */
 
+/**
+ * Sets up and defines RWTemplateHelpers to handle forms.
+ * @return { undefined }
+ */
 function RWTemplateFormsInit() {
 	"use strict";
 
@@ -15,16 +19,34 @@ function RWTemplateFormsInit() {
 
 	var autosave_timeouts = {};
 
+	/**
+	 * Helper to change opacity to 1.0 if value is truthy, 0.6 if value is falsey.
+	 * @param   { string|integer } val  - Truthy/falsey value.
+	 * @param   { Element        } elem - Element to change opacity of.
+	 * @returns { undefined }
+	 */
 	RWTemplateHelpers.opacity = function(val, elem) {
 		if (val) elem.style.opacity = "1.0";
 		else elem.style.opacity = "0.6";
 	};
 	RWTemplateHelpers.opacity_get = false;
 
+	/**
+	 * Sets className of element to bound value.
+	 * @param   { string|integer } val
+	 * @param   { Element        } elem
+	 * @returns { undefined }
+	 */
 	RWTemplateHelpers.className = function(val, elem) {
 		elem.className = val;
 	};
 
+	/**
+	 * Removes any form-related error classes from an element and/or its parent.
+	 * Sister function to add_error_class.
+	 * @param   { Element        } elem
+	 * @returns { undefined }
+	 */
 	RWTemplateHelpers.remove_error_class = function(element) {
 		var elem = element.classList ? element : this;
 		if (!elem.classList) return;
@@ -41,10 +63,21 @@ function RWTemplateFormsInit() {
 			}
 		}
 	};
+
+	/**
+	 * remove_error_class function name for minified templates.
+	 * @param   { Element        } elem
+	 * @returns { undefined }
+	 */
 	RWTemplateHelpers._rec = function(elem) {
 		elem.addEventListener("focus", RWTemplateHelpers.remove_error_class);
 	};
 
+	/**
+	 * Adds an error class to an element, or its parent form-group if using bootstrap.
+	 * @param   { Element        } elem
+	 * @returns { undefined }
+	 */
 	RWTemplateHelpers.add_error_class = function(element) {
 		var elem = elem.classList ? element : this;
 		if (!elem.classList) return;
@@ -62,6 +95,12 @@ function RWTemplateFormsInit() {
 		}
 	};
 
+	/**
+	 * Changes a Bootstrap button's class.
+	 * @param   { Element   } btn
+	 * @param   { string    } newClass
+	 * @returns { undefined }
+	 */
 	RWTemplateHelpers.change_button_class = function(btn, newClass) {
 		btn.classList.remove(btnSuccess);
 		btn.classList.remove(btnError);
@@ -72,6 +111,12 @@ function RWTemplateFormsInit() {
 		btn.classList.add(newClass);
 	};
 
+	/**
+	 * Change a button's text, or revert the button back to its original innerHTML.
+	 * @param   { Element   } btn
+	 * @param   { string    } [text]  - Omit to revert button.
+	 * @returns { undefined }
+	 */
 	RWTemplateHelpers.change_button_text = function(btn, text) {
 		if (btn._no_changes_please) return;
 		if (!btn._changed) {
@@ -87,6 +132,11 @@ function RWTemplateFormsInit() {
 		}
 	};
 
+	/**
+	 * Stop event propagation for all browsers, including IE8,
+	 * @param   { Event     } e
+	 * @returns { undefined }
+	 */
 	RWTemplateHelpers.stop_ie8_propagation = function(e) {
 		e = e || window.event;
 		e.cancelBubble = true;
@@ -96,11 +146,22 @@ function RWTemplateFormsInit() {
 		return e;
 	};
 
+	/**
+	 * Stop a button from working.
+	 * @param   { Event     } e
+	 * @returns { undefined }
+	 */
 	var stop_button = function(e) {
 		// e.stopPropagation();
 		e.preventDefault();
 	};
 
+	/**
+	 * Sets up form event trapping.
+	 * @param   { object    } _c   - template context
+	 * @param   { Element   } form - <form> HTML element
+	 * @returns { undefined }
+	 */
 	RWTemplateHelpers.on_form_render = function(_c, form) {
 		if (!_c.$t) return;
 
@@ -129,8 +190,16 @@ function RWTemplateFormsInit() {
 			}
 		}
 	};
+	// renamed function for minified template usage
 	RWTemplateHelpers._ofr = RWTemplateHelpers.on_form_render;
 
+	/**
+	 * Gets new values from form for a context, and any contexts that exist within it.
+	 * @param   { Boolean   } update_in_place - Updates the context with new data
+	 * @param   { Boolean   } only_diff       - Get only what's changed
+	 * @param   { Boolean   } shallow         - Do not go into any other contexts.
+	 * @returns { undefined }
+	 */
 	RWTemplateObject.prototype.get = function(update_in_place, only_diff, shallow) {
 		var new_obj = {};
 		var i, arr_i, ii;
@@ -217,13 +286,25 @@ function RWTemplateFormsInit() {
 		return new_obj;
 	};
 
+	/**
+	 * Reverts form to values present in the context. (an "undo", if the context hasn't been altered by user input)
+	 * @returns { undefined }
+	 */
 	RWTemplateObject.prototype.reset = function() {
 		this.normal();
+		// Since our original context hasn't changed (or rather, it *shouldn't* have changed
+		// unless someone messed around with it outside this library) we can just call update()
+		// which will override whatever input the user put in.
 		RWTemplateObject.prototype.update();
 	};
 
 	var allowed_tags = [ "select", "button", "textarea", "input" ];
 
+	/**
+	 * Gets all form input elements that have bind attributes that correspond to existing
+	 * variables in the template context.
+	 * @returns { Element[] }
+	 */
 	RWTemplateObject.prototype.get_form_elements = function() {
 		var elements = [];
 		var i, j;
@@ -263,6 +344,10 @@ function RWTemplateFormsInit() {
 		return elements;
 	};
 
+	/**
+	 * Resets all form inputs to have no value.
+	 * @returns { undefined }
+	 */
 	RWTemplateObject.prototype.clear = function() {
 		var elements = this.normal();
 		for (var i = 0; i < elements.length; i++) {
@@ -270,6 +355,12 @@ function RWTemplateFormsInit() {
 		}
 	};
 
+	/**
+	 * Disables a form and sets the form's submit button to say "submitting."
+	 * @param   { string    } [submit_message] - Message to put in submit button, defaults to "Saving..."
+	 * @param   { Boolean   } [no_disable]     - If true, will not disable form.
+	 * @returns { undefined }
+	 */
 	RWTemplateObject.prototype.submitting = function(submit_message, no_disable) {
 		if (typeof(submit_message) != "string") {
 			submit_message = typeof(gettext) == "function" ? gettext("Saving...") : "Saving...";
@@ -293,6 +384,13 @@ function RWTemplateFormsInit() {
 
 	var tracking_errors = {};
 
+	/**
+	 * Displays error state on the form, designed to work with Django REST.
+	 * @param   { object         } rest_error      - JSON from Django REST API call
+	 * @param   { XMLHttpRequest } xhr_object      - XMLHttpRequest used for server submission
+	 * @param   { string         } [error_message] - Text to put into error box, default changes according to XMLHttpRequest status or "Try Again."
+	 * @returns { undefined }
+	 */
 	RWTemplateObject.prototype.error = function(rest_error, xhr_object, error_message) {
 		if (xhr_object) {
 			if (xhr_object.status === 403) {
@@ -369,6 +467,11 @@ function RWTemplateFormsInit() {
 		}
 	};
 
+	/**
+	 * Normalizes form: re-enables all inputs and resets buttons to default state and text.
+	 * @param   { string    } [submit_button_text] - Defaults to previous submit button contents.
+	 * @returns { undefined }
+	 */
 	RWTemplateObject.prototype.normal = function(submit_button_text) {
 		var elements = this.get_form_elements();
 		for (var i = 0; i < elements.length; i++) {
@@ -385,6 +488,12 @@ function RWTemplateFormsInit() {
 		return elements;
 	};
 
+	/**
+	 * Changes submit buttons to display a success state.
+	 * @param   { string    } [success_message] - Defaults to "Saved"
+	 * @param   { Boolean   } [permanent]       - Makes button permanently display success_message
+	 * @returns { undefined }
+	 */
 	RWTemplateObject.prototype.success_display = function(success_message, permanent) {
 		if (typeof(this._success_message == "string") && !this._success_message) {
 			success_message = null;
@@ -420,6 +529,12 @@ function RWTemplateFormsInit() {
 		}
 	};
 
+	/**
+	 * Convenience function to updates context data, updates HTML, and calls success_display().
+	 * @param   { object         } json         - Data to update context with
+	 * @param   { XMLHttpRequest } [xhr_object] - unused
+	 * @returns { undefined }
+	 */
 	RWTemplateObject.prototype.success = function(json, xhr_object) {
 		this.update_data(json);
 		this.update();
@@ -455,6 +570,10 @@ function RWTemplateFormsInit() {
 		});
 	};
 
+	/**
+	 * Enables auto-save functionality on all elements in a form.
+	 * @returns { undefined }
+	 */
 	RWTemplateObject.prototype.enable_auto_save = function() {
 		if (!this.on_submit && !this.on_autosave) {
 			throw("$t.on_submit or $t.on_autosave must be defined before calling enable_auto_save.");
@@ -471,6 +590,13 @@ function RWTemplateFormsInit() {
 		}
 	};
 
+	/**
+	 * Sets up "tabs" to pair elements with a bind attribute of "x_tab" and a bind attribute
+	 * of "x_area" to create a tabbed interface.
+	 * @param   { object    } obj           - Template context
+	 * @param   { string    } [default_tab] - Default tab to open (e.g. if "hello", opens "hello_tab"+"hello_area" bound element+area)
+	 * @returns { undefined }
+	 */
 	RWTemplateHelpers.tabify = function(obj, default_tab) {
 		if (!obj.$t) return;
 		var areas = [];

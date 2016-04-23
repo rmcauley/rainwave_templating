@@ -1,8 +1,10 @@
+/* eslint max-depth: 0 */
 /* globals RWTemplateFormsInit */
 
 (function() {
 	"use strict";
 
+	// The all-important "template context".
 	var RWTemplateObject = function(_c) {
 		this._c = _c;
 		if (RWTemplateObject.prototype.error) {
@@ -33,6 +35,12 @@
 		RWTemplateFormsInit();
 	}
 
+	/**
+	 * Returns a deep-copy of an object or array and all of its children objects and arrays.
+	 * Excludes RWTemplate-related variables from the deep copy.
+	 * @param   { Object    } obj - Object to deep-copy
+	 * @returns { undefined }
+	 */
 	RWTemplateHelpers.copyObject = function(obj) {
 		var newobj = Object.prototype.toString.call(obj) === "[object Array]" ? [] : {};
 		for (var i in obj) {
@@ -58,6 +66,14 @@
 		return newobj;
 	};
 
+	/**
+	 * Internal function used to render an array to the template.
+	 * @param   { Array     } arr        - Array to be used as template context
+	 * @param   { template  } template   - Template rendering function
+	 * @param   { Element   } el         - Parent element for all array item elements.
+	 * @param   { Object    } [pcontext] - Parent context of array, if applicable.
+	 * @returns { undefined }
+	 */
 	RWTemplateHelpers.array_render = function(arr, template, el, pcontext) {
 		if (!arr.$t) {
 			arr.$t = new RWTemplateObject(arr);
@@ -117,6 +133,12 @@
 		}
 	};
 
+	/**
+	 * Deletes an item from HTML that used to belong to a rendered array
+	 * @param   { Element   } el      - Parent object for array
+	 * @param   { Object    } deleted - Item that was deleted from array.
+	 * @returns { undefined }
+	 */
 	RWTemplateHelpers.array_item_delete = function(el, deleted) {
 		if (deleted.$t && deleted.$t.item_root) {
 			for (var i = 0; i < deleted.$t.item_root.length; i++) {
@@ -130,6 +152,12 @@
 		}
 	};
 
+	/**
+	 * Updates a rendered array.
+	 * @param   { Array     } arr        - Array that's already been rendered once.
+	 * @param   { Boolean   } fullrender - Fully update all children, or only update item_roots
+	 * @returns { undefined }
+	 */
 	RWTemplateHelpers.array_update = function(arr, fullrender) {
 		if (!arr._shadows) return;
 
@@ -214,6 +242,13 @@
 		}
 	};
 
+	/**
+	 * Updates an element's textContent, value, src, or checked attributes depending on
+	 * what kind of element it is.
+	 * @param   { Element                      } elem - Element to update
+	 * @param   { string|integer|float|Boolean } val
+	 * @returns { undefined }
+	 */
 	RWTemplateHelpers.elem_update = function(elem, val) {
 		if (typeof(val) === "undefined") return;
 		if (typeof(elem) !== "object") return;
@@ -266,6 +301,11 @@
 		}
 	};
 
+	/**
+	 * Updates a template's HTML without altering the original template context.
+	 * @param   { Object    } [fromObject] - Object to use when updating elements with 'bind'.  Defaults to the template context.
+	 * @returns { undefined }
+	 */
 	RWTemplateObject.prototype.update = function(fromObject) {
 		if (Object.prototype.toString.call(this._c) === "[object Array]") {
 			return RWTemplateHelpers.array_update(this._c);
@@ -303,6 +343,19 @@
 		}
 	};
 
+	/**
+	 * Reconciles the order and contents of each item between 2 arrays.  The existing array
+	 * will be the merged array, and is merged/modified in-place.  The new array is left unmodified.
+	 * This function will retain all data *inside items* in existing while updating it with any
+	 * new data inside items in fresh, while discarding any items not found in fresh and adding
+	 * any new items that were not in existing before.  (importantly, it preserves the $t objects
+	 * in the existing array items)
+	 * This function requires a _unique_field to be set on the array, or
+	 * for _update_in_order or _exact_match flags to be set on the array to work.
+	 * @param   { Array     } fresh    - New array to be compared
+	 * @param   { Array     } existing - Existing array to be modified to match fresh
+	 * @returns { undefined }
+	 */
 	RWTemplateHelpers.array_reconcile = function(fresh, existing) {
 		if (!existing._unique_field && !existing._update_in_order && !existing._exact_match) {
 			// console.warn("Array that we're trying to update does not have a _unique_field property.");
@@ -406,6 +459,11 @@
 		}
 	};
 
+	/**
+	 * Updates a template context and any sub-contexts/objects/arrays with new data.
+	 * @param   { Object    } newData - New data to update the context with.
+	 * @returns { undefined }
+	 */
 	RWTemplateObject.prototype.update_data = function(newData) {
 		var newObj = newData || (this.get ? this.get() : {});
 		if (Object.prototype.toString.call(this._c) === "[object Array]") {
