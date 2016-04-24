@@ -79,7 +79,7 @@ function RWTemplateFormsInit() {
 	 * @returns { undefined }
 	 */
 	RWTemplateHelpers.add_error_class = function(element) {
-		var elem = elem.classList ? element : this;
+		var elem = element && element.classList ? element : this;
 		if (!elem.classList) return;
 		if (elem.classList.contains(errorClass)) {
 			elem.classList.remove(errorClass);
