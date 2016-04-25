@@ -56,7 +56,7 @@ Some handy things to know:
     - access root context object
   - `{{ ^document.lang }}`
     - use raw JS in the template excluding ^
-  - `{{#if ^c.flag == FLAG_CONSTANT }}`
+  - `{{#if ^_c.flag == FLAG_CONSTANT }}`
     - access the current object the template system is looking at with _c
 
 ## Convenience Extras
