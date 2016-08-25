@@ -346,7 +346,7 @@ class RainwaveParser(HTMLParser):
 						self.buffers[self._current_stack_point()] += "+"
 					self.buffers[self._current_stack_point()] += "="
 					if self.tree[-1] in self.helpers:
-						self.buffers[self._current_stack_point()] += "_h[%s](%s);" % (self.helpers[self.tree[-1]], self._parse_val(data))
+						self.buffers[self._current_stack_point()] += "_h[%s](%s, %s);" % (self.helpers[self.tree[-1]], self._parse_val(data), self.tree[-1])
 					else:
 						txt = self._parse_val(data)
 						if txt[0] == '"' and txt[-1] == '"':
