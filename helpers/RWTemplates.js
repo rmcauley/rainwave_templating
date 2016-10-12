@@ -227,6 +227,7 @@
 						for (j = 0; j < arr[i].$t.item_root.length; j++) {
 							if (arr[i].$t.item_root[j].parentNode) {
 								arr[i].$t.item_root[j].parentNode.appendChild(arr[i].$t.item_root[j]);
+								arr[i].$t.__i = i;
 							}
 						}
 					}
